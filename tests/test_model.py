@@ -26,7 +26,7 @@ def test_fit_mm():
     model.fit(rankings)
     
     assert model.is_fitted
-    assert model.params[0] > model.params[2]  # Item 0 ranked higher
+    assert model.params[0] > model.params[2]
 
 
 def test_fit_mle():
@@ -44,13 +44,19 @@ def test_fit_mle():
 
 def test_probability():
     """Test probability computation."""
-    rankings = [[0, 1, 2], [0, 1, 2]]
+    # Use varied rankings to avoid numerical issues
+    rankings = [
+        [0, 1, 2], 
+        [0, 2, 1],
+        [1, 0, 2]
+    ]
     
     model = PlackettLuce(n_items=3)
     model.fit(rankings)
     
     prob = model.probability([0, 1, 2])
     assert 0 <= prob <= 1
+    assert not np.isnan(prob)
 
 
 def test_rank_items():
@@ -61,7 +67,7 @@ def test_rank_items():
     model.fit(rankings)
     
     ranked = model.rank_items()
-    assert ranked[0] == 0  # Item 0 should be ranked first
+    assert ranked[0] == 0
 
 
 def test_top_k():
@@ -95,3 +101,19 @@ def test_log_likelihood():
     
     ll = model.log_likelihood(rankings)
     assert isinstance(ll, float)
+    assert not np.isnan(ll)
+
+
+def test_identical_rankings():
+    """Test that identical rankings don't cause numerical issues."""
+    rankings = [[0, 1, 2]] * 10
+    
+    model = PlackettLuce(n_items=3, method='mm')
+    model.fit(rankings)
+    
+    # With identical rankings, item 0 should be strongest
+    assert model.params[0] > model.params[1]
+    assert model.params[1] > model.params[2]
+    
+    # Parameters should all be valid numbers
+    assert np.all(np.isfinite(model.params))
