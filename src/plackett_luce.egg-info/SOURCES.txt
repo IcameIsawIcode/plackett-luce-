@@ -1,0 +1,10 @@
+README.md
+setup.py
+src/plackett_luce/__init__.py
+src/plackett_luce/model.py
+src/plackett_luce.egg-info/PKG-INFO
+src/plackett_luce.egg-info/SOURCES.txt
+src/plackett_luce.egg-info/dependency_links.txt
+src/plackett_luce.egg-info/requires.txt
+src/plackett_luce.egg-info/top_level.txt
+tests/test_model.py

@@ -113,8 +113,12 @@ class PlackettLuce:
                     for i in remaining[pos:]:
                         gamma[i] += 1 / denom
             
-            self.params = wins / (gamma + 1e-10)
+            # Avoid division by zero by adding small constant to both numerator and denominator
+            self.params = (wins + 1e-6) / (gamma + 1e-6)
+            # Normalize to sum to n_items
             self.params = self.params / np.sum(self.params) * self.n_items
+            # Ensure all parameters are positive
+            self.params = np.maximum(self.params, 1e-6)
             
             if np.max(np.abs(self.params - old_params)) < tol:
                 break
